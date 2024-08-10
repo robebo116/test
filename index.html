@@ -55,8 +55,7 @@
             const message = document.getElementById('messageInput').value;
             const resultDiv = document.getElementById('result');
 
-            // Thay thế URL này bằng URL thực của API của bạn
-            const apiUrl = 'http://0.0.0.0:8000';
+            const apiUrl = 'http://localhost:8000/messages';
 
             fetch(apiUrl, {
                 method: 'POST',
@@ -65,13 +64,18 @@
                 },
                 body: JSON.stringify({ message: message })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
-                resultDiv.innerHTML = 'Tin nhắn đã được gửi thành công!';
+                resultDiv.innerHTML = 'Tin nhắn đã được gửi thành công: ' + data.message;
             })
             .catch((error) => {
                 console.error('Error:', error);
-                resultDiv.innerHTML = 'Có lỗi xảy ra khi gửi tin nhắn.';
+                resultDiv.innerHTML = 'Có lỗi xảy ra khi gửi tin nhắn: ' + error.message;
             });
         }
     </script>
