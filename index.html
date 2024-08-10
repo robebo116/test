@@ -1,49 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Client</title>
+    <title>Gửi Tin Nhắn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>WebSocket Client</h1>
-    <textarea id="messages" rows="10" cols="50" readonly></textarea><br>
-    <input type="text" id="messageInput" placeholder="Enter message">
-    <button onclick="sendMessage()">Send</button>
+    <div class="container">
+        <h2>Gửi Tin Nhắn</h2>
+        <input type="text" id="messageInput" placeholder="Nhập tin nhắn của bạn">
+        <button onclick="sendMessage()">Gửi</button>
+        <div id="result"></div>
+    </div>
 
     <script>
-        // Kết nối đến máy chủ WebSocket
-        const socket = new WebSocket('ws://localhost:8765');
-
-        // Khi kết nối thành công
-        socket.onopen = () => {
-            console.log('WebSocket connection opened');
-        };
-
-        // Khi nhận tin nhắn từ máy chủ
-        socket.onmessage = (event) => {
-            const messages = document.getElementById('messages');
-            messages.value += `Server: ${event.data}\n`;
-        };
-
-        // Khi kết nối bị đóng
-        socket.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
-
-        // Khi có lỗi xảy ra
-        socket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
-
-        // Gửi tin nhắn đến máy chủ
         function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value;
-            socket.send(message);
-            const messages = document.getElementById('messages');
-            messages.value += `Client: ${message}\n`;
-            messageInput.value = '';
+            const message = document.getElementById('messageInput').value;
+            const resultDiv = document.getElementById('result');
+
+            // Thay thế URL này bằng URL thực của API của bạn
+            const apiUrl = 'https://api.example.com/messages';
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = 'Tin nhắn đã được gửi thành công!';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = 'Có lỗi xảy ra khi gửi tin nhắn.';
+            });
         }
     </script>
 </body>
