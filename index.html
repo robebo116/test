@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <textarea id="messages" rows="10" cols="50" readonly></textarea><br>
+    <input type="text" id="messageInput" placeholder="Enter message">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        // Kết nối đến máy chủ WebSocket
+        const socket = new WebSocket('ws://localhost:8765');
+
+        // Khi kết nối thành công
+        socket.onopen = () => {
+            console.log('WebSocket connection opened');
+        };
+
+        // Khi nhận tin nhắn từ máy chủ
+        socket.onmessage = (event) => {
+            const messages = document.getElementById('messages');
+            messages.value += `Server: ${event.data}\n`;
+        };
+
+        // Khi kết nối bị đóng
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        // Khi có lỗi xảy ra
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        // Gửi tin nhắn đến máy chủ
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            socket.send(message);
+            const messages = document.getElementById('messages');
+            messages.value += `Client: ${message}\n`;
+            messageInput.value = '';
+        }
+    </script>
+</body>
+</html>
